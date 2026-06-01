@@ -9,6 +9,9 @@ samples/
 data/
 # CSV export (transaksi pribadi)
 output/
+# kunci service account Google (JSON) — taruh file kunci di sini
+secrets/
+*service-account*.json
 
 # Dokumen kerja yang memuat contoh transaksi/nama/angka ASLI (tetap lokal)
 CLAUDE.md
