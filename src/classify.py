@@ -28,12 +28,25 @@ MERCHANT_RULES: list[tuple[str, list[str]]] = [
         "WARKOP", "RESTORAN",
         "FC",  # konvensi QRIS Indonesia: "<nama> FC" lazimnya = fried chicken.
                # Sedikit ambigu — pantau kalau ada "FC" non-makanan, hapus dari sini.
+        # --- makanan/minuman dari data nyata (jelas dari nama) ---
+        "JUICE", "PECEL", "MENDOAN", "MARTABAK", "ROTI", "GUDEG", "KIMBAP",
+        "COFFE",  # varian ejaan dari COFFEE (mis. "...COFFE MEKARWANG")
+        "MCD",    # singkatan McDonald's
     ]),
     ("Belanja online", ["SHOPEE", "TOKOPEDIA", "LAZADA", "TIKTOK"]),
-    ("Belanja harian", ["SUPERINDO", "INDOMARET", "ALFA", "MIDI", "ALGO MC88"]),
+    ("Belanja harian", [
+        "SUPERINDO", "INDOMARET", "ALFA", "MIDI", "ALGO MC88",
+        # --- minimarket dari data nyata ---
+        "ALFAMART", "YOMART", "MART",
+        "IDM",  # kode QRIS Indomaret (mis. "IDM TBOC ..."). Singkatan — pantau false-match.
+    ]),
     ("Jasa", ["LAUNDRY", "CAR WASH", "CUCI", "S'TEAM", "SHOES CLEAN"]),
-    ("Olahraga & hobi", ["GOR", "BADMINTON", "VAPESTORE"]),
+    ("Olahraga & hobi", ["GOR", "BADMINTON", "VAPESTORE", "GAMING"]),
     ("Pulsa & data", ["MYTELKOMSEL", "TELKOMSEL", "XL", "INDOSAT"]),
+    # --- kategori baru dari data 4 bulan ---
+    ("Transportasi", ["KAI", "TRAVELOKA"]),  # KAI = Kereta Api Indonesia
+    # "UNIVERSITY"/"PENDIDIKAN" — JANGAN pakai "TELKOM" (bentrok MYTELKOMSEL/Pulsa).
+    ("Pendidikan", ["UNIVERSITY", "PENDIDIKAN"]),
 ]
 
 FALLBACK = "Lainnya"
