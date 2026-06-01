@@ -1,0 +1,5 @@
+{
+  "pdf_password": "ISI_PASSWORD_E_STATEMENT_DI_SINI",
+  "nama_kiriman_ortu": ["NAMA PENGIRIM KIRIMAN, mis. nama ortu"],
+  "_catatan": "Salin file ini jadi config.json lalu isi. config.json DI-GITIGNORE (jangan commit)."
+}

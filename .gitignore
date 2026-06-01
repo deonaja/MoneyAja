@@ -1,0 +1,34 @@
+# === RAHASIA & DATA PRIBADI — JANGAN PERNAH COMMIT ===
+# (catatan: .gitignore TIDAK mendukung komentar di akhir baris — taruh di baris sendiri)
+
+# password e-statement + nama pengirim kiriman
+config.json
+# PDF e-statement asli (nama, no. rekening, alamat)
+samples/
+# transactions.json (transaksi pribadi)
+data/
+# CSV export (transaksi pribadi)
+output/
+
+# Dokumen kerja yang memuat contoh transaksi/nama/angka ASLI (tetap lokal)
+CLAUDE.md
+todo.md
+# recheck.py butuh PDF asli (gitignored) & memuat data nyata
+tests/
+
+# Konfigurasi Claude Code (lokal)
+.claude/
+
+# === Python ===
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# === OS / editor ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
