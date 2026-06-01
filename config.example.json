@@ -1,5 +1,7 @@
 {
   "pdf_password": "ISI_PASSWORD_E_STATEMENT_DI_SINI",
   "nama_kiriman_ortu": ["NAMA PENGIRIM KIRIMAN, mis. nama ortu"],
+  "google_sa_json": "path/ke/service-account.json (opsional, utk sync Google Sheet)",
+  "sheet_id": "ID dari URL Google Sheet (opsional)",
   "_catatan": "Salin file ini jadi config.json lalu isi. config.json DI-GITIGNORE (jangan commit)."
 }
