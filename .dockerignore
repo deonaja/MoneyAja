@@ -1,0 +1,16 @@
+# JANGAN masukkan rahasia / data pribadi ke image (config via ENV di Cloud Run)
+config.json
+secrets/
+data/
+output/
+samples/
+tests/
+CLAUDE.md
+todo.md
+*.md
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.venv/
+venv/

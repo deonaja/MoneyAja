@@ -33,6 +33,10 @@ _CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config.json")
 
 
 def _load_nama_ortu() -> list:
+    # ENV dulu (Cloud Run): "NAMA_KIRIMAN_ORTU=NAMA1,NAMA2"
+    env = os.environ.get("NAMA_KIRIMAN_ORTU")
+    if env:
+        return [n.strip() for n in env.split(",") if n.strip()]
     try:
         with open(_CONFIG_PATH, encoding="utf-8") as f:
             return json.load(f).get("nama_kiriman_ortu", [])
