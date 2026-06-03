@@ -159,11 +159,14 @@ def _api(method: str) -> str:
 
 
 def tg_send(chat_id, text: str) -> None:
+    import sys
     try:
-        requests.post(_api("sendMessage"), json={"chat_id": chat_id, "text": text},
-                      timeout=30)
-    except Exception:
-        pass
+        r = requests.post(_api("sendMessage"), json={"chat_id": chat_id, "text": text},
+                          timeout=30)
+        if r.status_code != 200:
+            print(f"tg_send gagal {r.status_code}: {r.text[:200]}", file=sys.stderr)
+    except Exception as e:
+        print(f"tg_send exception: {type(e).__name__}: {e}", file=sys.stderr)
 
 
 def tg_download(file_id: str) -> bytes:
@@ -217,6 +220,23 @@ def create_app():
     @app.get("/")
     def health():
         return "ok", 200
+
+    @app.get("/diag")
+    def diag():
+        # Diagnostik SEMENTARA, dikunci webhook_secret. Tidak membocorkan nilai secret.
+        if request.args.get("key") != _cfg("webhook_secret"):
+            return "forbidden", 403
+        keys = ["bot_token", "pdf_password", "sheet_id", "webhook_secret",
+                "nama_kiriman_ortu", "google_sa_json", "allowed_chat_ids"]
+        present = {k: bool(_cfg(k)) for k in keys}
+        tok = _cfg("bot_token")
+        try:
+            r = requests.get(_api("getMe"), timeout=15)
+            getme = {"status": r.status_code, "ok": r.json().get("ok"),
+                     "username": (r.json().get("result") or {}).get("username")}
+        except Exception as e:
+            getme = {"error": f"{type(e).__name__}: {e}"}
+        return {"present": present, "bot_token_len": len(tok or ""), "getme": getme}, 200
 
     @app.post("/webhook")
     def webhook():
