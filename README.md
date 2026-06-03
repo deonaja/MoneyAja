@@ -1,3 +1,15 @@
+---
+title: MoneyAja Bot
+emoji: 📄
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
+<!-- Frontmatter di atas dibaca Hugging Face Spaces (Docker Space, port 7860). -->
+
 # MoneyAja
 
 Automation rekap pengeluaran pribadi dari e-statement PDF wondr (BNI). Parser deterministik
