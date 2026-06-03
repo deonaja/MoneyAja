@@ -245,7 +245,12 @@ def create_app():
             return "webhook_secret not configured", 503
         if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != secret:
             return "forbidden", 403
-        handle_update(request.get_json(force=True, silent=True) or {})
+        # Balas 200 SEKETIKA; proses (unduh+parse+sheet+balas) di background thread.
+        # Mencegah webhook Telegram timeout saat cold-start / kerja lambat -> tak ada
+        # retry/duplikat, dan balasan tetap terkirim setelah selesai.
+        import threading
+        update = request.get_json(force=True, silent=True) or {}
+        threading.Thread(target=handle_update, args=(update,), daemon=True).start()
         return "ok", 200
 
     return app
