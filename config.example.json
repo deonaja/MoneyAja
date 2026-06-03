@@ -3,5 +3,8 @@
   "nama_kiriman_ortu": ["NAMA PENGIRIM KIRIMAN, mis. nama ortu"],
   "google_sa_json": "path/ke/service-account.json (opsional, utk sync Google Sheet)",
   "sheet_id": "ID dari URL Google Sheet (opsional)",
+  "bot_token": "token dari @BotFather (utk bot Telegram, opsional)",
+  "webhook_secret": "token rahasia header webhook (WAJIB saat deploy; webhook fail-closed)",
+  "allowed_chat_ids": "chat id Telegram yang boleh pakai bot, dipisah koma (WAJIB saat deploy)",
   "_catatan": "Salin file ini jadi config.json lalu isi. config.json DI-GITIGNORE (jangan commit)."
 }

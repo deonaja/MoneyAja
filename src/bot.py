@@ -14,7 +14,9 @@ Konfigurasi via ENV (Cloud Run) atau fallback config.json (lokal):
     SHEET_ID           id Google Sheet
     GOOGLE_SA_JSON     isi JSON service account (Cloud Run) ATAU path file (lokal)
     NAMA_KIRIMAN_ORTU  (opsional) nama pengirim, dipisah koma
-    WEBHOOK_SECRET     (opsional) token rahasia header webhook Telegram
+    WEBHOOK_SECRET     token rahasia header webhook Telegram (WAJIB; webhook fail-closed)
+    ALLOWED_CHAT_IDS   daftar chat id Telegram yang boleh pakai bot, dipisah koma
+                       (WAJIB; kalau kosong bot menolak semua & membalas chat id pengirim)
 """
 
 from __future__ import annotations
@@ -48,6 +50,16 @@ def _cfg(key: str, default=None):
             return json.load(f).get(key, default)
     except Exception:
         return default
+
+
+def _allowed_chat_ids():
+    """Set chat id yang diizinkan (str). None = belum dikonfigurasi (fail-closed)."""
+    raw = _cfg("allowed_chat_ids")
+    if not raw:
+        return None
+    items = raw if isinstance(raw, list) else str(raw).replace(";", ",").split(",")
+    ids = {str(x).strip() for x in items if str(x).strip()}
+    return ids or None
 
 
 def _credentials():
@@ -167,14 +179,28 @@ def handle_update(update: dict) -> None:
     chat_id = (msg.get("chat") or {}).get("id")
     if not chat_id:
         return
+
+    # --- Allowlist (fail-closed): hanya chat id terdaftar yang boleh pakai bot ---
+    allowed = _allowed_chat_ids()
+    if allowed is None:
+        tg_send(chat_id, f"⚠️ Bot belum dikonfigurasi. Chat ID kamu: {chat_id}\n"
+                         f"Set ENV ALLOWED_CHAT_IDS={chat_id} lalu deploy ulang.")
+        return
+    if str(chat_id) not in allowed:
+        tg_send(chat_id, f"⛔ Bot ini privat. (Chat ID kamu: {chat_id})")
+        return
+
     doc = msg.get("document")
     if doc and str(doc.get("file_name", "")).lower().endswith(".pdf"):
         tg_send(chat_id, "⏳ Lagi proses e-statement...")
         try:
             data = tg_download(doc["file_id"])
             tg_send(chat_id, process_pdf(data))
-        except Exception as e:
-            tg_send(chat_id, f"❌ Gagal proses: {type(e).__name__}: {e}")
+        except Exception:
+            import sys
+            import traceback
+            print("handle_update error:\n" + traceback.format_exc(), file=sys.stderr)
+            tg_send(chat_id, "❌ Gagal memproses file. Coba lagi; kalau berulang cek log server.")
     elif msg.get("text", "").startswith("/start"):
         tg_send(chat_id, "Halo! Kirim/share file PDF e-statement wondr ke sini, "
                          "nanti kurekap otomatis ke Google Sheet. 📄")
@@ -195,7 +221,9 @@ def create_app():
     @app.post("/webhook")
     def webhook():
         secret = _cfg("webhook_secret")
-        if secret and request.headers.get("X-Telegram-Bot-Api-Secret-Token") != secret:
+        if not secret:  # fail-closed: tanpa secret, jangan layani webhook
+            return "webhook_secret not configured", 503
+        if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != secret:
             return "forbidden", 403
         handle_update(request.get_json(force=True, silent=True) or {})
         return "ok", 200
